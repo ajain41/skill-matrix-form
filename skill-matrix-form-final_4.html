@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Matrix Form</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--br:#6C3EE8;--brl:#EDE8FB;--brm:#9B7AF0;--tp:#1a1a2e;--ts:#6b6b80;--th:#a0a0b0;--bg:#f5f4f8;--sf:#fff;--bd:#e4e2ec;--am:#F5A623;--rd:#E24B4A;--gn:#1D9E75;--r:14px;--rs:8px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tp);min-height:100vh;padding:2rem 1rem 4rem}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(108,62,232,.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(108,62,232,.04) 0%,transparent 60%);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:720px;margin:0 auto}
+.fhead{background:linear-gradient(135deg,#6C3EE8,#9B7AF0);border-radius:var(--r) var(--r) 0 0;padding:2.5rem 2rem 2rem;color:#fff;position:relative;overflow:hidden}
+.fhead::before{content:'';position:absolute;top:-40px;right:60px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.05)}
+.fhead::after{content:'';position:absolute;bottom:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.07)}
+.fhead h1{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;margin-bottom:8px;position:relative}
+.fhead p{font-size:14px;opacity:.85;line-height:1.6;position:relative}
+.fhead .req-note{font-size:12px;opacity:.7;margin-top:12px;position:relative}
+.fbody{background:var(--sf);border:1px solid var(--bd);border-top:none;border-radius:0 0 var(--r) var(--r);padding:0 0 2rem;box-shadow:0 4px 24px rgba(108,62,232,.10)}
+.prog-wrap{height:3px;background:var(--bd)}.prog{height:100%;background:linear-gradient(90deg,var(--br),var(--brm));width:0%;transition:width .4s}
+.sdiv{padding:1.4rem 2rem 0;display:flex;align-items:center;gap:12px}
+.slbl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--br);white-space:nowrap}
+.sline{flex:1;height:1px;background:var(--bd)}
+.qcard{margin:.9rem 1.5rem 0;border:1px solid var(--bd);border-radius:var(--rs);padding:1.1rem 1.4rem;transition:border-color .2s;background:var(--sf)}
+.qcard:focus-within{border-color:var(--brm)}
+.qcard.err{border-color:var(--rd)}
+.qlbl{font-size:14px;font-weight:500;color:var(--tp);margin-bottom:5px;display:flex;align-items:center;gap:4px}
+.req{color:var(--rd);font-size:15px;line-height:1}
+.qhint{font-size:12px;color:var(--th);margin-bottom:8px;line-height:1.5}
+.errmsg{font-size:12px;color:var(--rd);margin-top:6px;display:none}
+.qcard.err .errmsg{display:block}
+.tinput{width:100%;border:1px solid var(--bd);border-radius:var(--rs);padding:9px 13px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--tp);background:#fafafa;transition:border-color .2s;outline:none}
+.tinput:focus{border-color:var(--br);background:#fff}
+/* Direct rating block */
+.dblock{margin:.9rem 1.5rem 0;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.dblock.err{border-color:var(--rd)}
+.dhead{padding:.9rem 1.4rem .7rem;background:#fafafa;border-bottom:1px solid var(--bd)}
+.dhead-t{font-size:14px;font-weight:500;color:var(--tp)}
+.dhead-h{font-size:12px;color:var(--th);margin-top:2px}
+.drow{display:flex;align-items:center;padding:11px 1.4rem;border-bottom:1px solid var(--bd);gap:10px;transition:background .15s}
+.drow:last-child{border-bottom:none}
+.drow:hover{background:#fafbff}
+.dname{font-size:14px;font-weight:500;color:var(--tp);min-width:170px;flex-shrink:0}
+.dstars{display:flex;gap:2px;flex:1;flex-wrap:wrap}
+.dbadge{font-size:11px;font-weight:600;color:var(--th);min-width:48px;text-align:right;flex-shrink:0}
+.dbadge.on{color:var(--br)}
+/* Multi select block */
+.mblock{margin:.9rem 1.5rem 0;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.mblock.err{border-color:var(--rd)}
+.mhead{padding:.9rem 1.4rem .7rem;background:#fafafa;border-bottom:1px solid var(--bd)}
+.mhead-t{font-size:14px;font-weight:500;color:var(--tp);display:flex;align-items:center;gap:4px}
+.mhead-h{font-size:12px;color:var(--th);margin-top:2px}
+.mrow{display:flex;align-items:center;padding:10px 1.4rem;border-bottom:1px solid var(--bd);gap:10px;transition:background .15s}
+.mrow:last-child{border-bottom:none}
+.mrow:hover{background:#fafbff}
+.orow{display:flex;align-items:center;padding:9px 1.4rem;border-top:1px solid var(--bd);gap:10px;background:#fafafa}
+.schk{width:18px;height:18px;accent-color:var(--br);cursor:pointer;flex-shrink:0}
+.sname{font-size:14px;font-weight:500;min-width:150px;cursor:pointer;user-select:none;flex-shrink:0;transition:color .15s;color:var(--th)}
+.sname.on{color:var(--tp)}
+.sra{flex:1;display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.sra.locked{opacity:.3;pointer-events:none}
+.mstars{display:flex;gap:2px;flex-wrap:wrap}
+.mbadge{font-size:11px;font-weight:600;color:var(--th);min-width:40px;text-align:right;flex-shrink:0}
+.mbadge.on{color:var(--br)}
+.oinp{flex:1;border:none;border-bottom:1px solid var(--bd);padding:4px 0;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--tp);outline:none;background:transparent}
+.oinp:focus{border-color:var(--br)}
+.oinp.locked{opacity:.3;pointer-events:none}
+.star{font-size:20px;cursor:pointer;color:#ddd;transition:color .1s,transform .1s;line-height:1;user-select:none}
+.star:hover{transform:scale(1.12)}
+.star.lit{color:var(--am)}
+.subrow{padding:1.5rem 1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.btn-sub{background:var(--br);color:#fff;border:none;border-radius:100px;padding:12px 36px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:background .2s,opacity .2s}
+.btn-sub:hover{background:#5530cc}
+.btn-sub:disabled{opacity:.6;cursor:not-allowed}
+.btn-clr{background:transparent;color:var(--ts);border:1px solid var(--bd);border-radius:100px;padding:11px 22px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer}
+.succ{display:none;flex-direction:column;align-items:center;justify-content:center;padding:4rem 2rem;text-align:center}
+.sico{width:70px;height:70px;border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;color:var(--gn);font-size:32px}
+.succ h2{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;margin-bottom:8px}
+.succ p{font-size:14px;color:var(--ts);line-height:1.7;max-width:400px}
+@media(max-width:520px){.dname,.sname{min-width:90px;font-size:13px}.star{font-size:16px}.qcard,.mblock,.dblock{margin-left:1rem;margin-right:1rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="fhead">
+    <h1>Skill Matrix Form</h1>
+    <p>Please rate your proficiency across all tools and skills. Your responses help us understand your strengths and expertise areas.</p>
+    <div class="req-note">* Required fields</div>
+  </div>
+
+  <!-- Rating Instructions Banner -->
+  <div style="background:#1a1a2e;border-left:4px solid #F5A623;margin:0;padding:1.1rem 1.75rem;">
+    <div style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#F5A623;margin-bottom:10px;">Rating Scale Instructions</div>
+    <div style="font-size:13px;color:#e0e0e8;line-height:1.5;margin-bottom:8px;">Please assign your ratings between <strong style="color:white">0 – 10</strong> for each skill:</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;">
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <span style="background:#E24B4A;color:white;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0">0</span>
+        <span style="font-size:12px;color:#c0c0cc">No awareness of topic</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <span style="background:#BA7517;color:white;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0">1 – 2</span>
+        <span style="font-size:12px;color:#c0c0cc">Has awareness of topic</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <span style="background:#185FA5;color:white;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0">3 – 5</span>
+        <span style="font-size:12px;color:#c0c0cc">Can operate but under guidance</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <span style="background:#0F6E56;color:white;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0">6 – 7</span>
+        <span style="font-size:12px;color:#c0c0cc">Can operate without guidance</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <span style="background:#6C3EE8;color:white;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0">8 – 10</span>
+        <span style="font-size:12px;color:#c0c0cc">Can train others</span>
+      </div>
+    </div>
+  </div>
+  <div class="fbody">
+    <div class="prog-wrap"><div class="prog" id="prog"></div></div>
+    <form id="mform" novalidate>
+
+      <!-- PERSONAL INFO -->
+      <div class="sdiv"><span class="slbl">Personal Information</span><div class="sline"></div></div>
+
+      <div class="qcard" id="card-name">
+        <div class="qlbl">Full Name <span class="req">*</span></div>
+        <select class="tinput" id="f-name" onchange="uprog()" style="cursor:pointer">
+          <option value="">-- Select your name --</option>
+          <option>Aarya Tyagi</option><option>Abhinav Khemka</option><option>Abhishek Jain</option><option>Abhishek Saraswat</option><option>Aditya Ashish Mokashi</option><option>Aditya Singh</option><option>Akshay Negi</option><option>Aman Tyagi</option><option>Amar Nath</option><option>Amrish Kumar Singh</option><option>Anant Jain</option><option>Anika Bhardwaj</option><option>Ankit Kumar</option><option>Ankit Sirohi</option><option>Anoop Singh</option><option>Anosh Singh</option><option>Antra Sangal</option><option>Anupam Kumar Shukla</option><option>Arvind Kapoor</option><option>Ashish Sharma</option><option>Ashutosh Solanki</option><option>Atul Singh Chauhan</option><option>Ayush Kumar Garg</option><option>Bhavya Shukla</option><option>Bishnu Kumar</option><option>Chanda Rani</option><option>Chhotan Kumar</option><option>Deepak Singh</option><option>Deepanshu Gupta</option><option>Deepanshu Singh Negi</option><option>Deeptanshu Yadav</option><option>Digvijay Singh</option><option>Gaurav Kumar</option><option>Girish Kumar Jha</option><option>Gulshan Kumar Jha</option><option>Hardik Kumar Jain</option><option>Harsh Kumar</option><option>Harsh Tripathi</option><option>Harshit Agnihotri</option><option>Harshit Upreti</option><option>Himanshu Dixit</option><option>Janvi Gupta</option><option>Jigyasa Rawat</option><option>Kajal Agarwal</option><option>Kajal Chaudhary</option><option>Kanchan Khemka</option><option>Kanika</option><option>Kartik Pant</option><option>Komaragiri Sai Rohith</option><option>Kritika Chauhan</option><option>Lalita Mohan Sethi</option><option>Maahir Juneja</option><option>Mayank Mathur</option><option>Mohit Chaudhary</option><option>Nikhil Rawat</option><option>Nishant Tyagi</option><option>Piyush Jain</option><option>Prabhjeet Singh</option><option>Prakhar Gupta</option><option>Prakhar Raj</option><option>Pranjal Joshi</option><option>Pranjal Tomar</option><option>Prashant Kumar</option><option>Prashant Negi</option><option>Prashant Saxena</option><option>Pravin Pathak</option><option>Priyanka Kumari</option><option>Priyanshu Nigam</option><option>Puneet Kaushik</option><option>Rahul Pratap Singh</option><option>Rahul Singh</option><option>Rajarshi Roy</option><option>RajKumar Mishra</option><option>Rajnish Kumar</option><option>Ravi Singh Rawat</option><option>Rishab Kushwaha</option><option>Rohit Kumar Thakur</option><option>Sachin Lodhi</option><option>Sahil Rana</option><option>Sanjay Tayal</option><option>Sarthak Gosain</option><option>Sarvagya Singh</option><option>Satish Kumar</option><option>Saurabh Kumar Chauhan</option><option>Shalin Singh Sahni</option><option>Sharmistha Dey</option><option>Shashank Arya</option><option>Shivam Kumar</option><option>Shivam Raj</option><option>Shivanchal Nader</option><option>Shivangi Yadav</option><option>Shivansh Goyal</option><option>Shivanshu Singh</option><option>Shubham Chaudhary</option><option>Shubham Singh</option><option>Shubham Singh (RW0384)</option><option>Simon George</option><option>Smruti Mishra</option><option>Sudhanshu Dixit</option><option>Sumer Singh Negi</option><option>Suneel Kumar</option><option>Suresh Kumar</option><option>Surya Pratap Singh</option><option>Swaraj Kumar Lenka</option><option>Tanuj Maithani</option><option>Tarun Mishra</option><option>Tarun Sharma</option><option>Tavi Sirohi</option><option>Tushar Pant</option><option>Vinayak Gupta</option><option>Vinit Sheoran</option><option>Vivek Gotam</option><option>Vivek Kumar</option><option>Vivek Kumar Gupta</option><option>Yash Pratap Singh</option><option>Yogesh Kumar</option><option>Yoginder Singh</option><option>Yogita Dahiya</option><option>Yogyata Nagayach</option>
+        </select>
+        <div class="errmsg">Please select your name.</div>
+      </div>
+
+      <div class="qcard" id="card-email">
+        <div class="qlbl">Email Address <span class="req">*</span></div>
+        <input type="email" class="tinput" id="f-email" placeholder="e.g. name@rightwave.com" oninput="uprog()">
+        <div class="errmsg">Please enter a valid email address.</div>
+      </div>
+
+      <div class="qcard" id="card-role">
+        <div class="qlbl">Current Role / Designation <span class="req">*</span></div>
+        <input type="text" class="tinput" id="f-role" placeholder="e.g. Marketing Automation Specialist" oninput="uprog()">
+        <div class="errmsg">Please enter your role.</div>
+      </div>
+
+      <div class="qcard" id="card-empid">
+        <div class="qlbl">Employee ID <span class="req">*</span></div>
+        <input type="text" class="tinput" id="f-empid" placeholder="e.g. RW0123" oninput="uprog()">
+        <div class="errmsg">Please enter your Employee ID.</div>
+      </div>
+
+      <div class="qcard" id="card-tl">
+        <div class="qlbl">TL / Manager Name <span class="req">*</span></div>
+        <input type="text" class="tinput" id="f-tl" placeholder="e.g. Rahul Singh" oninput="uprog()">
+        <div class="errmsg">Please enter your TL / Manager name.</div>
+      </div>
+
+      <!-- CORE SKILLS -->
+      <div class="sdiv"><span class="slbl">Core Skills</span><div class="sline"></div></div>
+      <div class="dblock">
+        <div class="dhead">
+          <div class="dhead-t">Rate your proficiency in each skill <span class="req">*</span></div>
+          <div class="dhead-h">Click stars to rate — 1 = Beginner &nbsp;·&nbsp; 10 = Expert</div>
+        </div>
+        <div class="drow"><span class="dname">MS SQL</span><div class="dstars" id="dst-mssql"></div><span class="dbadge" id="dbg-mssql">—</span></div>
+        <div class="drow"><span class="dname">HTML / CSS</span><div class="dstars" id="dst-htmlcss"></div><span class="dbadge" id="dbg-htmlcss">—</span></div>
+        <div class="drow"><span class="dname">Client Communication</span><div class="dstars" id="dst-clientcomm"></div><span class="dbadge" id="dbg-clientcomm">—</span></div>
+        <div class="drow"><span class="dname">WordPress</span><div class="dstars" id="dst-wordpress"></div><span class="dbadge" id="dbg-wordpress">—</span></div>
+      </div>
+
+      <!-- MARKETING AUTOMATION — mandatory direct rating -->
+      <div class="sdiv"><span class="slbl">Marketing Automation / CRM Tools</span><div class="sline"></div></div>
+      <div class="dblock">
+        <div class="dhead">
+          <div class="dhead-t">Rate your proficiency in each tool <span class="req">*</span></div>
+          <div class="dhead-h">Rating is mandatory for all tools — 1 = Beginner &nbsp;·&nbsp; 10 = Expert</div>
+        </div>
+        <div class="drow"><span class="dname">Marketo</span><div class="dstars" id="dst-marketo"></div><span class="dbadge" id="dbg-marketo">—</span></div>
+        <div class="drow"><span class="dname">HubSpot</span><div class="dstars" id="dst-hubspot"></div><span class="dbadge" id="dbg-hubspot">—</span></div>
+        <div class="drow"><span class="dname">SFDC</span><div class="dstars" id="dst-sfdc"></div><span class="dbadge" id="dbg-sfdc">—</span></div>
+        <div class="drow"><span class="dname">SFMC</span><div class="dstars" id="dst-sfmc"></div><span class="dbadge" id="dbg-sfmc">—</span></div>
+        <div class="drow"><span class="dname">Pardot</span><div class="dstars" id="dst-pardot"></div><span class="dbadge" id="dbg-pardot">—</span></div>
+        <div class="drow"><span class="dname">RW-MAAS</span><div class="dstars" id="dst-rwmaas"></div><span class="dbadge" id="dbg-rwmaas">—</span></div>
+      </div>
+
+      <!-- MS OFFICE — mandatory direct rating -->
+      <div class="sdiv"><span class="slbl">MS Office Tools</span><div class="sline"></div></div>
+      <div class="dblock">
+        <div class="dhead">
+          <div class="dhead-t">Rate your proficiency in each tool <span class="req">*</span></div>
+          <div class="dhead-h">Rating is mandatory for all tools — 1 = Beginner &nbsp;·&nbsp; 10 = Expert</div>
+        </div>
+        <div class="drow"><span class="dname">Excel</span><div class="dstars" id="dst-excel"></div><span class="dbadge" id="dbg-excel">—</span></div>
+        <div class="drow"><span class="dname">PowerPoint</span><div class="dstars" id="dst-ppt"></div><span class="dbadge" id="dbg-ppt">—</span></div>
+        <div class="drow"><span class="dname">Word</span><div class="dstars" id="dst-word"></div><span class="dbadge" id="dbg-word">—</span></div>
+      </div>
+
+      <!-- WEBINAR TOOLS -->
+      <div class="sdiv"><span class="slbl">Webinar Integration Tools</span><div class="sline"></div></div>
+      <div class="mblock" id="mb-webinar">
+        <div class="mhead">
+          <div class="mhead-t">Select tools you use &amp; rate your proficiency</div>
+          <div class="mhead-h">Check a tool to activate rating — 1 = Beginner &nbsp;·&nbsp; 10 = Expert</div>
+        </div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-on24" onchange="tog('on24')"><label class="sname" for="chk-on24" id="lbl-on24">ON24</label><div class="sra locked" id="sra-on24"><div class="mstars" id="mst-on24"></div><span class="mbadge" id="mbg-on24">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-gtw" onchange="tog('gtw')"><label class="sname" for="chk-gtw" id="lbl-gtw">Go To Webinar</label><div class="sra locked" id="sra-gtw"><div class="mstars" id="mst-gtw"></div><span class="mbadge" id="mbg-gtw">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-zoom" onchange="tog('zoom')"><label class="sname" for="chk-zoom" id="lbl-zoom">Zoom</label><div class="sra locked" id="sra-zoom"><div class="mstars" id="mst-zoom"></div><span class="mbadge" id="mbg-zoom">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-brighttalk" onchange="tog('brighttalk')"><label class="sname" for="chk-brighttalk" id="lbl-brighttalk">Brighttalk</label><div class="sra locked" id="sra-brighttalk"><div class="mstars" id="mst-brighttalk"></div><span class="mbadge" id="mbg-brighttalk">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-cvent" onchange="tog('cvent')"><label class="sname" for="chk-cvent" id="lbl-cvent">Cvent</label><div class="sra locked" id="sra-cvent"><div class="mstars" id="mst-cvent"></div><span class="mbadge" id="mbg-cvent">—</span></div></div>
+        <div class="orow"><input type="checkbox" class="schk" id="chk-oweb" onchange="togOther('oweb')"><label class="sname" for="chk-oweb" id="lbl-oweb">Other</label><input class="oinp locked" id="oinp-oweb" placeholder="Please specify..." disabled></div>
+      </div>
+
+
+
+      <!-- BI TOOLS -->
+      <div class="sdiv"><span class="slbl">Business Intelligence Tools</span><div class="sline"></div></div>
+      <div class="mblock" id="mb-bi">
+        <div class="mhead">
+          <div class="mhead-t">Select tools you use &amp; rate your proficiency</div>
+          <div class="mhead-h">Check a tool to activate rating — 1 = Beginner &nbsp;·&nbsp; 10 = Expert</div>
+        </div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-powerbi" onchange="tog('powerbi')"><label class="sname" for="chk-powerbi" id="lbl-powerbi">Power BI</label><div class="sra locked" id="sra-powerbi"><div class="mstars" id="mst-powerbi"></div><span class="mbadge" id="mbg-powerbi">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-tableau" onchange="tog('tableau')"><label class="sname" for="chk-tableau" id="lbl-tableau">Tableau</label><div class="sra locked" id="sra-tableau"><div class="mstars" id="mst-tableau"></div><span class="mbadge" id="mbg-tableau">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-domo" onchange="tog('domo')"><label class="sname" for="chk-domo" id="lbl-domo">Domo</label><div class="sra locked" id="sra-domo"><div class="mstars" id="mst-domo"></div><span class="mbadge" id="mbg-domo">—</span></div></div>
+        <div class="orow"><input type="checkbox" class="schk" id="chk-obi" onchange="togOther('obi')"><label class="sname" for="chk-obi" id="lbl-obi">Other</label><input class="oinp locked" id="oinp-obi" placeholder="Please specify..." disabled></div>
+      </div>
+
+      <!-- SCRIPTING -->
+      <div class="sdiv"><span class="slbl">Scripting Tools</span><div class="sline"></div></div>
+      <div class="mblock" id="mb-scripting">
+        <div class="mhead">
+          <div class="mhead-t">Select tools you use &amp; rate your proficiency</div>
+          <div class="mhead-h">Check a tool to activate rating — 1 = Beginner &nbsp;·&nbsp; 10 = Expert</div>
+        </div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-js" onchange="tog('js')"><label class="sname" for="chk-js" id="lbl-js">JavaScript</label><div class="sra locked" id="sra-js"><div class="mstars" id="mst-js"></div><span class="mbadge" id="mbg-js">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-velocity" onchange="tog('velocity')"><label class="sname" for="chk-velocity" id="lbl-velocity">Velocity Script</label><div class="sra locked" id="sra-velocity"><div class="mstars" id="mst-velocity"></div><span class="mbadge" id="mbg-velocity">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-ampscript" onchange="tog('ampscript')"><label class="sname" for="chk-ampscript" id="lbl-ampscript">AMP Script</label><div class="sra locked" id="sra-ampscript"><div class="mstars" id="mst-ampscript"></div><span class="mbadge" id="mbg-ampscript">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-appsscript" onchange="tog('appsscript')"><label class="sname" for="chk-appsscript" id="lbl-appsscript">Apps Script</label><div class="sra locked" id="sra-appsscript"><div class="mstars" id="mst-appsscript"></div><span class="mbadge" id="mbg-appsscript">—</span></div></div>
+        <div class="orow"><input type="checkbox" class="schk" id="chk-oscript" onchange="togOther('oscript')"><label class="sname" for="chk-oscript" id="lbl-oscript">Other</label><input class="oinp locked" id="oinp-oscript" placeholder="Please specify..." disabled></div>
+      </div>
+
+      <!-- AUTOMATION -->
+      <div class="sdiv"><span class="slbl">Automation Tools</span><div class="sline"></div></div>
+      <div class="mblock" id="mb-automation">
+        <div class="mhead">
+          <div class="mhead-t">Select tools you use &amp; rate your proficiency</div>
+          <div class="mhead-h">Check a tool to activate rating — 1 = Beginner &nbsp;·&nbsp; 10 = Expert</div>
+        </div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-workato" onchange="tog('workato')"><label class="sname" for="chk-workato" id="lbl-workato">Workato</label><div class="sra locked" id="sra-workato"><div class="mstars" id="mst-workato"></div><span class="mbadge" id="mbg-workato">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-zapier" onchange="tog('zapier')"><label class="sname" for="chk-zapier" id="lbl-zapier">Zapier</label><div class="sra locked" id="sra-zapier"><div class="mstars" id="mst-zapier"></div><span class="mbadge" id="mbg-zapier">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-trayio" onchange="tog('trayio')"><label class="sname" for="chk-trayio" id="lbl-trayio">Tray.io</label><div class="sra locked" id="sra-trayio"><div class="mstars" id="mst-trayio"></div><span class="mbadge" id="mbg-trayio">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-n8n" onchange="tog('n8n')"><label class="sname" for="chk-n8n" id="lbl-n8n">n8n</label><div class="sra locked" id="sra-n8n"><div class="mstars" id="mst-n8n"></div><span class="mbadge" id="mbg-n8n">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-rdn" onchange="tog('rdn')"><label class="sname" for="chk-rdn" id="lbl-rdn">RDN</label><div class="sra locked" id="sra-rdn"><div class="mstars" id="mst-rdn"></div><span class="mbadge" id="mbg-rdn">—</span></div></div>
+        <div class="orow"><input type="checkbox" class="schk" id="chk-oauto" onchange="togOther('oauto')"><label class="sname" for="chk-oauto" id="lbl-oauto">Other</label><input class="oinp locked" id="oinp-oauto" placeholder="Please specify..." disabled></div>
+      </div>
+
+      <!-- AI TOOLS -->
+      <div class="sdiv"><span class="slbl">AI Tools</span><div class="sline"></div></div>
+      <div class="mblock" id="mb-ai">
+        <div class="mhead">
+          <div class="mhead-t">Select tools you use &amp; rate your proficiency</div>
+          <div class="mhead-h">Check a tool to activate rating — 1 = Beginner &nbsp;·&nbsp; 10 = Expert</div>
+        </div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-chatgpt" onchange="tog('chatgpt')"><label class="sname" for="chk-chatgpt" id="lbl-chatgpt">ChatGPT</label><div class="sra locked" id="sra-chatgpt"><div class="mstars" id="mst-chatgpt"></div><span class="mbadge" id="mbg-chatgpt">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-gemini" onchange="tog('gemini')"><label class="sname" for="chk-gemini" id="lbl-gemini">Gemini</label><div class="sra locked" id="sra-gemini"><div class="mstars" id="mst-gemini"></div><span class="mbadge" id="mbg-gemini">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-claude" onchange="tog('claude')"><label class="sname" for="chk-claude" id="lbl-claude">Claude</label><div class="sra locked" id="sra-claude"><div class="mstars" id="mst-claude"></div><span class="mbadge" id="mbg-claude">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-perplexity" onchange="tog('perplexity')"><label class="sname" for="chk-perplexity" id="lbl-perplexity">Perplexity</label><div class="sra locked" id="sra-perplexity"><div class="mstars" id="mst-perplexity"></div><span class="mbadge" id="mbg-perplexity">—</span></div></div>
+        <div class="orow"><input type="checkbox" class="schk" id="chk-oai" onchange="togOther('oai')"><label class="sname" for="chk-oai" id="lbl-oai">Other</label><input class="oinp locked" id="oinp-oai" placeholder="Please specify..." disabled></div>
+      </div>
+
+      <!-- ROUTING TOOLS -->
+      <div class="sdiv"><span class="slbl">Routing Tools</span><div class="sline"></div></div>
+      <div class="mblock" id="mb-routing">
+        <div class="mhead">
+          <div class="mhead-t">Select tools you use &amp; rate your proficiency</div>
+          <div class="mhead-h">Check a tool to activate rating — 1 = Beginner &nbsp;·&nbsp; 10 = Expert</div>
+        </div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-leandata" onchange="tog('leandata')"><label class="sname" for="chk-leandata" id="lbl-leandata">Lean Data</label><div class="sra locked" id="sra-leandata"><div class="mstars" id="mst-leandata"></div><span class="mbadge" id="mbg-leandata">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-fullcast" onchange="tog('fullcast')"><label class="sname" for="chk-fullcast" id="lbl-fullcast">Full Cast</label><div class="sra locked" id="sra-fullcast"><div class="mstars" id="mst-fullcast"></div><span class="mbadge" id="mbg-fullcast">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-ringlead" onchange="tog('ringlead')"><label class="sname" for="chk-ringlead" id="lbl-ringlead">Ringlead</label><div class="sra locked" id="sra-ringlead"><div class="mstars" id="mst-ringlead"></div><span class="mbadge" id="mbg-ringlead">—</span></div></div>
+        <div class="orow"><input type="checkbox" class="schk" id="chk-orout" onchange="togOther('orout')"><label class="sname" for="chk-orout" id="lbl-orout">Other</label><input class="oinp locked" id="oinp-orout" placeholder="Please specify..." disabled></div>
+      </div>
+
+      <!-- PROJECT MANAGEMENT -->
+      <div class="sdiv"><span class="slbl">Project Management Tools</span><div class="sline"></div></div>
+      <div class="mblock" id="mb-pm">
+        <div class="mhead">
+          <div class="mhead-t">Select tools you use &amp; rate your proficiency</div>
+          <div class="mhead-h">Check a tool to activate rating — 1 = Beginner &nbsp;·&nbsp; 10 = Expert</div>
+        </div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-monday" onchange="tog('monday')"><label class="sname" for="chk-monday" id="lbl-monday">Monday</label><div class="sra locked" id="sra-monday"><div class="mstars" id="mst-monday"></div><span class="mbadge" id="mbg-monday">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-asana" onchange="tog('asana')"><label class="sname" for="chk-asana" id="lbl-asana">Asana</label><div class="sra locked" id="sra-asana"><div class="mstars" id="mst-asana"></div><span class="mbadge" id="mbg-asana">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-jira" onchange="tog('jira')"><label class="sname" for="chk-jira" id="lbl-jira">Jira</label><div class="sra locked" id="sra-jira"><div class="mstars" id="mst-jira"></div><span class="mbadge" id="mbg-jira">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-freshservice" onchange="tog('freshservice')"><label class="sname" for="chk-freshservice" id="lbl-freshservice">Freshservice</label><div class="sra locked" id="sra-freshservice"><div class="mstars" id="mst-freshservice"></div><span class="mbadge" id="mbg-freshservice">—</span></div></div>
+        <div class="mrow"><input type="checkbox" class="schk" id="chk-wrike" onchange="tog('wrike')"><label class="sname" for="chk-wrike" id="lbl-wrike">Wrike</label><div class="sra locked" id="sra-wrike"><div class="mstars" id="mst-wrike"></div><span class="mbadge" id="mbg-wrike">—</span></div></div>
+        <div class="orow"><input type="checkbox" class="schk" id="chk-opm" onchange="togOther('opm')"><label class="sname" for="chk-opm" id="lbl-opm">Other</label><input class="oinp locked" id="oinp-opm" placeholder="Please specify..." disabled></div>
+      </div>
+
+      <div class="subrow">
+        <button type="button" class="btn-clr" onclick="clrForm()">Clear form</button>
+        <button type="button" class="btn-sub" id="btnSub" onclick="subForm()">Submit Response</button>
+      </div>
+    </form>
+
+    <div class="succ" id="succ">
+      <div class="sico">✓</div>
+      <h2>Response Submitted!</h2>
+      <p>Thank you for completing the Skill Matrix Form.<br>Your responses have been recorded successfully.</p>
+      <button onclick="resetForm()" style="margin-top:1.5rem;background:#6C3EE8;color:white;border:none;border-radius:100px;padding:12px 28px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;">Fill Another Response</button>
+    </div>
+  </div>
+</div>
+<script>
+const GF_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSdh5tFBRY2ZZKMxJ9SXDf7Itewkh6fJ9-0Y9ZJZFReYYW_E2w/formResponse';
+
+// Each tool gets its OWN entry ID — separate column in Sheet
+// IMPORTANT: These entry IDs need to be updated after you add individual questions in Google Form
+// For now using placeholder structure — update after getting new pre-filled link
+const GF_ENTRIES = {
+  'Full Name':                          'entry.1512313339',
+  'Email Address':                      'entry.1532482179',
+  'Role':                               'entry.2124763468',
+  'Employee ID':                        'entry.1255247461',
+  'TL / Manager Name':                  'entry.1716142899',
+  'MS SQL':                             'entry.519275272',
+  'HTML/CSS':                           'entry.1101962270',
+  'Client Communication':               'entry.1600038591',
+  'WordPress':                          'entry.1376134368',
+  'Marketo':                            'entry.345477122',
+  'HubSpot':                            'entry.561253686',
+  'SFDC':                               'entry.58511024',
+  'SFMC':                               'entry.1812598856',
+  'Pardot':                             'entry.432120519',
+  'RW-MAAS':                            'entry.1315963109',
+  'Excel':                              'entry.954642901',
+  'PowerPoint':                         'entry.980642436',
+  'Word':                               'entry.58139112',
+  'ON24':                               'entry.1564905783',
+  'Go To Webinar':                      'entry.1811596309',
+  'Zoom':                               'entry.160318464',
+  'Brighttalk':                         'entry.1262295302',
+  'Cvent':                              'entry.661915863',
+  'Webinar Other':                      'entry.855750923',
+  'Power BI':                           'entry.477458256',
+  'Tableau':                            'entry.2079702264',
+  'Domo':                               'entry.1603731',
+  'BI Other':                           'entry.1039817571',
+  'JavaScript':                         'entry.1280203919',
+  'Velocity Script':                    'entry.2078186820',
+  'AMP Script':                         'entry.241166730',
+  'Apps Script':                        'entry.1961220036',
+  'Scripting Other':                    'entry.121286779',
+  'Workato':                            'entry.910699921',
+  'Zapier':                             'entry.1064805253',
+  'Tray.io':                            'entry.520000476',
+  'n8n':                                'entry.173409015',
+  'RDN':                                'entry.1982252818',
+  'Automation Other':                   'entry.393508931',
+  'ChatGPT':                            'entry.317258261',
+  'Gemini':                             'entry.1654160112',
+  'Claude':                             'entry.1463217457',
+  'Perplexity':                         'entry.151931316',
+  'AI Other':                           'entry.1883865482',
+  'Lean Data':                          'entry.1680491452',
+  'Full Cast':                          'entry.1904720065',
+  'Ringlead':                           'entry.1466405858',
+  'Routing Other':                      'entry.1836358230',
+  'Monday':                             'entry.50888450',
+  'Asana':                              'entry.2131273172',
+  'Jira':                               'entry.2140837751',
+  'Freshservice':                       'entry.1732505459',
+  'Wrike':                              'entry.566359453',
+  'PM Other':                           'entry.207205230',
+};
+
+const R = {};
+
+// Direct skills — 10 stars
+const directSkills = [
+  {id:'mssql',label:'MS SQL'},{id:'htmlcss',label:'HTML/CSS'},
+  {id:'clientcomm',label:'Client Communication'},{id:'wordpress',label:'WordPress'},
+  {id:'marketo',label:'Marketo'},{id:'hubspot',label:'HubSpot'},
+  {id:'sfdc',label:'SFDC'},{id:'sfmc',label:'SFMC'},
+  {id:'pardot',label:'Pardot'},{id:'rwmaas',label:'RW-MAAS'},
+  {id:'excel',label:'Excel'},{id:'ppt',label:'PowerPoint'},{id:'word',label:'Word'}
+];
+
+directSkills.forEach(({id}) => {
+  const el = document.getElementById('dst-'+id);
+  const badge = document.getElementById('dbg-'+id);
+  if (!el) return;
+  for (let i=1; i<=10; i++) {
+    const s = document.createElement('span');
+    s.className='star'; s.textContent='★'; s.dataset.v=i;
+    s.addEventListener('mouseenter',()=>{ el.querySelectorAll('.star').forEach(x=>x.classList.toggle('lit',+x.dataset.v<=i)); });
+    s.addEventListener('mouseleave',()=>{ const c=R[id]||0; el.querySelectorAll('.star').forEach(x=>x.classList.toggle('lit',+x.dataset.v<=c)); });
+    s.addEventListener('click',()=>{ R[id]=i; el.querySelectorAll('.star').forEach(x=>x.classList.toggle('lit',+x.dataset.v<=i)); badge.textContent=i+'/10'; badge.classList.add('on'); uprog(); });
+    el.appendChild(s);
+  }
+});
+
+// Multi tools — 10 stars
+const multiTools = ['on24','gtw','zoom','brighttalk','cvent','powerbi','tableau','domo','js','velocity','ampscript','appsscript','workato','zapier','trayio','n8n','rdn','chatgpt','gemini','claude','perplexity','leandata','fullcast','ringlead','monday','asana','jira','freshservice','wrike'];
+
+multiTools.forEach(id => {
+  const el = document.getElementById('mst-'+id);
+  const badge = document.getElementById('mbg-'+id);
+  if (!el) return;
+  for (let i=1; i<=10; i++) {
+    const s = document.createElement('span');
+    s.className='star'; s.textContent='★'; s.dataset.v=i;
+    s.addEventListener('mouseenter',()=>{ el.querySelectorAll('.star').forEach(x=>x.classList.toggle('lit',+x.dataset.v<=i)); });
+    s.addEventListener('mouseleave',()=>{ const c=R[id]||0; el.querySelectorAll('.star').forEach(x=>x.classList.toggle('lit',+x.dataset.v<=c)); });
+    s.addEventListener('click',()=>{ R[id]=i; el.querySelectorAll('.star').forEach(x=>x.classList.toggle('lit',+x.dataset.v<=i)); badge.textContent=i+'/10'; badge.classList.add('on'); uprog(); });
+    el.appendChild(s);
+  }
+});
+
+function tog(id) {
+  const chk=document.getElementById('chk-'+id);
+  const lbl=document.getElementById('lbl-'+id);
+  const sra=document.getElementById('sra-'+id);
+  const badge=document.getElementById('mbg-'+id);
+  const stars=document.querySelectorAll('#mst-'+id+' .star');
+  if(chk.checked){lbl&&lbl.classList.add('on');sra&&sra.classList.remove('locked');}
+  else{lbl&&lbl.classList.remove('on');sra&&sra.classList.add('locked');R[id]=0;stars.forEach(s=>s.classList.remove('lit'));if(badge){badge.textContent='—';badge.classList.remove('on');}}
+  uprog();
+}
+
+function togOther(id){
+  const chk=document.getElementById('chk-'+id);
+  const lbl=document.getElementById('lbl-'+id);
+  const inp=document.getElementById('oinp-'+id);
+  if(chk&&chk.checked){lbl&&lbl.classList.add('on');if(inp){inp.classList.remove('locked');inp.disabled=false;inp.focus();}}
+  else{lbl&&lbl.classList.remove('on');if(inp){inp.classList.add('locked');inp.disabled=true;inp.value='';}}
+}
+
+function uprog(){
+  let total=5+directSkills.length+multiTools.length, filled=0;
+  ['f-name','f-email','f-role','f-empid','f-tl'].forEach(id=>{if(document.getElementById(id)?.value.trim())filled++;});
+  directSkills.forEach(({id})=>{if(R[id]>0)filled++;});
+  multiTools.forEach(id=>{if(document.getElementById('chk-'+id)?.checked)filled++;});
+  document.getElementById('prog').style.width=Math.min(100,Math.round(filled/total*100))+'%';
+}
+document.querySelectorAll('.tinput').forEach(i=>i.addEventListener('input',uprog));
+
+function collectData(){
+  const d={};
+  d['Full Name']=document.getElementById('f-name').value.trim();
+  d['Email Address']=document.getElementById('f-email').value.trim();
+  d['Role']=document.getElementById('f-role').value.trim();
+  d['Employee ID']=document.getElementById('f-empid').value.trim();
+  d['TL / Manager Name']=document.getElementById('f-tl').value.trim();
+
+  // Core skills
+  ['mssql','htmlcss','clientcomm','wordpress'].forEach(id=>{
+    const labels={'mssql':'MS SQL','htmlcss':'HTML/CSS','clientcomm':'Client Communication','wordpress':'WordPress'};
+    d[labels[id]]=R[id]?R[id]+'/10':'No rating provided';
+  });
+
+  // MA tools — mandatory, separate columns
+  const maMap={'marketo':'Marketo','hubspot':'HubSpot','sfdc':'SFDC','sfmc':'SFMC','pardot':'Pardot','rwmaas':'RW-MAAS'};
+  Object.entries(maMap).forEach(([id,label])=>{ d[label]=R[id]?R[id]+'/10':'No rating provided'; });
+
+  // Webinar — separate columns
+  const webinarMap={'on24':'ON24','gtw':'Go To Webinar','zoom':'Zoom','brighttalk':'Brighttalk','cvent':'Cvent'};
+  Object.entries(webinarMap).forEach(([id,label])=>{
+    const chk=document.getElementById('chk-'+id);
+    const badge=document.getElementById('mbg-'+id);
+    d[label]=chk?.checked?(badge?.textContent!=='—'?badge.textContent:'Selected - no rating'):'No rating provided';
+  });
+  const oweb=document.getElementById('oinp-oweb');
+  d['Webinar Other']=document.getElementById('chk-oweb')?.checked&&oweb?.value.trim()?oweb.value.trim():'';
+
+  // MS Office — direct mandatory ratings
+  d['Excel']=R['excel']?R['excel']+'/10':'No rating provided';
+  d['PowerPoint']=R['ppt']?R['ppt']+'/10':'No rating provided';
+  d['Word']=R['word']?R['word']+'/10':'No rating provided';
+
+  // BI — separate columns
+  const biMap={'powerbi':'Power BI','tableau':'Tableau','domo':'Domo'};
+  Object.entries(biMap).forEach(([id,label])=>{
+    const chk=document.getElementById('chk-'+id);
+    const badge=document.getElementById('mbg-'+id);
+    d[label]=chk?.checked?(badge?.textContent!=='—'?badge.textContent:'Selected - no rating'):'No rating provided';
+  });
+  const obi=document.getElementById('oinp-obi');
+  d['BI Other']=document.getElementById('chk-obi')?.checked&&obi?.value.trim()?obi.value.trim():'';
+
+  // Scripting — separate columns
+  const scriptMap={'js':'JavaScript','velocity':'Velocity Script','ampscript':'AMP Script','appsscript':'Apps Script'};
+  Object.entries(scriptMap).forEach(([id,label])=>{
+    const chk=document.getElementById('chk-'+id);
+    const badge=document.getElementById('mbg-'+id);
+    d[label]=chk?.checked?(badge?.textContent!=='—'?badge.textContent:'Selected - no rating'):'No rating provided';
+  });
+  const oscript=document.getElementById('oinp-oscript');
+  d['Scripting Other']=document.getElementById('chk-oscript')?.checked&&oscript?.value.trim()?oscript.value.trim():'';
+
+  // Automation — separate columns
+  const autoMap={'workato':'Workato','zapier':'Zapier','trayio':'Tray.io','n8n':'n8n','rdn':'RDN'};
+  Object.entries(autoMap).forEach(([id,label])=>{
+    const chk=document.getElementById('chk-'+id);
+    const badge=document.getElementById('mbg-'+id);
+    d[label]=chk?.checked?(badge?.textContent!=='—'?badge.textContent:'Selected - no rating'):'No rating provided';
+  });
+  const oauto=document.getElementById('oinp-oauto');
+  d['Automation Other']=document.getElementById('chk-oauto')?.checked&&oauto?.value.trim()?oauto.value.trim():'';
+
+  // AI — separate columns
+  const aiMap={'chatgpt':'ChatGPT','gemini':'Gemini','claude':'Claude','perplexity':'Perplexity'};
+  Object.entries(aiMap).forEach(([id,label])=>{
+    const chk=document.getElementById('chk-'+id);
+    const badge=document.getElementById('mbg-'+id);
+    d[label]=chk?.checked?(badge?.textContent!=='—'?badge.textContent:'Selected - no rating'):'No rating provided';
+  });
+  const oai=document.getElementById('oinp-oai');
+  d['AI Other']=document.getElementById('chk-oai')?.checked&&oai?.value.trim()?oai.value.trim():'';
+
+  // Routing — separate columns
+  const routMap={'leandata':'Lean Data','fullcast':'Full Cast','ringlead':'Ringlead'};
+  Object.entries(routMap).forEach(([id,label])=>{
+    const chk=document.getElementById('chk-'+id);
+    const badge=document.getElementById('mbg-'+id);
+    d[label]=chk?.checked?(badge?.textContent!=='—'?badge.textContent:'Selected - no rating'):'No rating provided';
+  });
+  const orout=document.getElementById('oinp-orout');
+  d['Routing Other']=document.getElementById('chk-orout')?.checked&&orout?.value.trim()?orout.value.trim():'';
+
+  // PM — separate columns
+  const pmMap={'monday':'Monday','asana':'Asana','jira':'Jira','freshservice':'Freshservice','wrike':'Wrike'};
+  Object.entries(pmMap).forEach(([id,label])=>{
+    const chk=document.getElementById('chk-'+id);
+    const badge=document.getElementById('mbg-'+id);
+    d[label]=chk?.checked?(badge?.textContent!=='—'?badge.textContent:'Selected - no rating'):'No rating provided';
+  });
+  const opm=document.getElementById('oinp-opm');
+  d['PM Other']=document.getElementById('chk-opm')?.checked&&opm?.value.trim()?opm.value.trim():'';
+
+  d['Submitted At']=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});
+  return d;
+}
+
+function validate(){
+  let ok=true;
+  [['f-name','card-name'],['f-email','card-email'],['f-role','card-role'],['f-empid','card-empid'],['f-tl','card-tl']].forEach(([fid,cid])=>{
+    const val=document.getElementById(fid)?.value.trim();
+    document.getElementById(cid)?.classList.toggle('err',!val);
+    if(!val)ok=false;
+  });
+  const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('f-email')?.value.trim());
+  document.getElementById('card-email')?.classList.toggle('err',!emailOk);
+  if(!emailOk)ok=false;
+  // MA tools mandatory
+  const maIds=['marketo','hubspot','sfdc','sfmc','pardot','rwmaas'];
+  const maAllRated=maIds.every(id=>R[id]>0);
+  const maBlock=document.querySelector('.dblock:nth-of-type(2)');
+  if(maBlock)maBlock.style.outline=maAllRated?'':'2px solid #E24B4A';
+  if(!maAllRated)ok=false;
+  const officeIds=['excel','ppt','word'];
+  const officeAllRated=officeIds.every(id=>R[id]>0);
+  const officeBlock=document.querySelector('.dblock:nth-of-type(3)');
+  if(officeBlock)officeBlock.style.outline=officeAllRated?'':'2px solid #E24B4A';
+  if(!officeAllRated)ok=false;
+  return ok;
+}
+
+function subForm(){
+  if(!validate()){document.querySelector('.err,[style*="2px solid"]')?.scrollIntoView({behavior:'smooth',block:'center'});return;}
+  const btn=document.getElementById('btnSub');
+  btn.textContent='Submitting...'; btn.disabled=true;
+  const data=collectData();
+  const autoSubmitHTML=`<!DOCTYPE html><html><head><title>Submitting...</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:#f5f4f8;display:flex;align-items:center;justify-content:center;min-height:100vh}.card{background:white;border-radius:16px;padding:2.5rem 2rem;text-align:center;max-width:340px}.spinner{width:48px;height:48px;border:4px solid #EDE8FB;border-top:4px solid #6C3EE8;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1.5rem}@keyframes spin{to{transform:rotate(360deg)}}h2{font-size:18px;color:#1a1a2e;margin-bottom:8px}p{font-size:13px;color:#6b6b80}</style></head><body><div class="card"><div class="spinner"></div><h2>Submitting your response...</h2><p>Please wait, do not close this tab.</p></div><form id="gf" method="POST" action="${GF_ACTION}">${Object.entries(GF_ENTRIES).map(([label,entryId])=>'<input type="hidden" name="'+entryId+'" id="fe_'+entryId.replace('entry.','')+'">').join('')}</form><script>const entries=${JSON.stringify(data)};const gfEntries=${JSON.stringify(GF_ENTRIES)};Object.entries(gfEntries).forEach(([label,entryId])=>{const el=document.getElementById('fe_'+entryId.replace('entry.',''));if(el)el.value=entries[label]||'';});document.getElementById('gf').submit();setTimeout(()=>window.close(),2500);<\/script></body></html>`;
+  const blob=new Blob([autoSubmitHTML],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  window.open(url,'_blank');
+  setTimeout(()=>{showSuccess();URL.revokeObjectURL(url);},1000);
+}
+
+function showSuccess(){
+  document.getElementById('mform').style.display='none';
+  document.getElementById('succ').style.display='flex';
+  document.getElementById('prog').style.width='100%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetForm(){
+  directSkills.forEach(({id})=>{R[id]=0;const b=document.getElementById('dbg-'+id);if(b){b.textContent='—';b.classList.remove('on');}document.querySelectorAll('#dst-'+id+' .star').forEach(s=>s.classList.remove('lit'));});
+  multiTools.forEach(id=>{const chk=document.getElementById('chk-'+id);if(chk)chk.checked=false;const lbl=document.getElementById('lbl-'+id);lbl&&lbl.classList.remove('on');const sra=document.getElementById('sra-'+id);sra&&sra.classList.add('locked');const b=document.getElementById('mbg-'+id);if(b){b.textContent='—';b.classList.remove('on');}document.querySelectorAll('#mst-'+id+' .star').forEach(s=>s.classList.remove('lit'));R[id]=0;});
+  ['oweb','ooff','obi','oscript','oauto','oai','orout','opm'].forEach(id=>{const chk=document.getElementById('chk-'+id);if(chk)chk.checked=false;const inp=document.getElementById('oinp-'+id);if(inp){inp.classList.add('locked');inp.disabled=true;inp.value='';}const lbl=document.getElementById('lbl-'+id);if(lbl)lbl.classList.remove('on');});
+  ['f-name','f-email','f-role','f-empid','f-tl'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('.err').forEach(e=>e.classList.remove('err'));
+  document.querySelectorAll('.dblock').forEach(b=>b.style.outline='');
+  const btn=document.getElementById('btnSub');btn.textContent='Submit Response';btn.disabled=false;
+  document.getElementById('mform').style.display='block';
+  document.getElementById('succ').style.display='none';
+  document.getElementById('prog').style.width='0%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function clrForm(){
+  if(!confirm('Clear all your answers?'))return;
+  resetForm();
+}
+</script>
+</body>
+</html>
